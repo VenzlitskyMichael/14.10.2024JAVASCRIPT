@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка ФИО и разбор URL</title>
+</head>
+<body>
+    <h1>Проверка ФИО на недопустимые символы</h1>
+    <label for="fio">Введите ФИО:</label>
+    <input type="text" id="fio">
+    <button onclick="checkFIO()">Проверить</button>
+    <p id="fio-result"></p>
+
+    <h1>Разделение HTTP-адреса на составные части</h1>
+    <label for="url">Введите URL:</label>
+    <input type="text" id="url" placeholder="http://www.example.com/path/file.php?param=value">
+    <button onclick="parseURL()">Разделить</button>
+    <div id="url-result"></div>
+    <script>
+        function checkFIO() {
+            const fioInput = document.getElementById('fio').value;
+            const pattern = /^[А-Яа-яA-Za-z.\s]+$/; 
+            const resultElement = document.getElementById('fio-result');
+            if (pattern.test(fioInput)) {
+                resultElement.textContent = "ФИО введено корректно.";
+            } else {
+                resultElement.textContent = "Ошибка: введены недопустимые символы.";
+            }
+        }
+        function parseURL() {
+            const urlInput = document.getElementById('url').value;
+            const resultElement = document.getElementById('url-result');
+
+            try {
+                const parsedUrl = new URL(urlInput);
+                const protocol = parsedUrl.protocol;
+                const host = parsedUrl.host;
+                const path = parsedUrl.pathname;
+                const fileName = path.substring(path.lastIndexOf('/') + 1);
+                const query = parsedUrl.search;
+                let output = `
+                    <p>Протокол: ${protocol}</p>
+                    <p>Хост: ${host}</p>
+                    <p>Путь: ${path}</p>
+                    <p>Имя файла: ${fileName}</p>
+                    <p>Строка запроса: ${query}</p>
+                `;
+                const queryParams = new URLSearchParams(parsedUrl.search);
+                if (queryParams.toString()) {
+                    output += `<p>Параметры запроса:</p><ul>`;
+                    queryParams.forEach((value, key) => {
+                        output += `<li>${key}: ${value}</li>`;
+                    });
+                    output += `</ul>`;
+                }
+                resultElement.innerHTML = output;
+            } catch (error) {
+                resultElement.textContent = "Ошибка: Введите корректный URL.";
+            }
+        }
+    </script>
+</body>
+</html>
